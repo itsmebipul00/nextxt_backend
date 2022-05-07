@@ -1,11 +1,15 @@
 import express from 'express'
 
+import cors from 'cors'
+
 import connectDB from './config/db.js'
 
 import dotenv from 'dotenv'
 
 import userRoutes from './routes/userRoutes.js'
+
 import authRoutes from './routes/authRoutes.js'
+
 import {
 	errorHandler,
 	notFound,
@@ -16,6 +20,9 @@ dotenv.config()
 connectDB()
 
 const app = express()
+
+app.use(cors())
+
 app.use(express.json())
 
 if (process.env.NODE_ENV === 'development') {
