@@ -12,6 +12,26 @@ const userSchema = mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		username: {
+			type: String,
+			required: true,
+		},
+		bio: String,
+		userLink: String,
+		profilePic: String,
+		drafts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+		archived: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+		scheduled: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+		],
+		following: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+		],
+		follower: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+		bookmarks: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+		],
 	},
 	{ timestamps: true }
 )

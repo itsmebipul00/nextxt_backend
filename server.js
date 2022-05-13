@@ -10,6 +10,8 @@ import userRoutes from './routes/userRoutes.js'
 
 import authRoutes from './routes/authRoutes.js'
 
+import postsRoutes from './routes/postsRoutes.js'
+
 import {
 	errorHandler,
 	notFound,
@@ -21,9 +23,9 @@ connectDB()
 
 const app = express()
 
-app.use(cors())
-
 app.use(express.json())
+
+app.use(cors())
 
 if (process.env.NODE_ENV === 'development') {
 	app.get('/', (req, res) => {
@@ -33,6 +35,7 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/posts', postsRoutes)
 
 app.use(notFound)
 app.use(errorHandler)
