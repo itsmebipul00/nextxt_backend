@@ -6,7 +6,7 @@ import User from '../models/userModel.js'
 // @route   POST /api/auth
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-	const { email, password } = req.body
+	const { username, email, password } = req.body
 	const user = await User.findOne({ email })
 
 	if (!!user) {
@@ -15,8 +15,16 @@ const authUser = asyncHandler(async (req, res) => {
 		if (!!user && isPasswordMatched) {
 			res.json({
 				_id: user._id,
-				username: user.name,
+				username: user.username,
 				email: user.email,
+				posts: user.posts,
+				drafts: user.drafts,
+				archived: user.archived,
+				following: user.following,
+				followers: user.followers,
+				bookmarks: user.bookmarks,
+				bio: user.bio,
+				dp: user.profilePic,
 				token: generateToken(user._id),
 			})
 		} else {
@@ -25,6 +33,7 @@ const authUser = asyncHandler(async (req, res) => {
 		}
 	} else {
 		const user = await User.create({
+			username,
 			email,
 			password,
 		})
@@ -32,7 +41,12 @@ const authUser = asyncHandler(async (req, res) => {
 		if (Boolean(user)) {
 			res.status(201).json({
 				_id: user._id,
+				username: user.username,
 				email: user.email,
+				posts: user.posts,
+				following: user.following,
+				followers: user.followers,
+				bookmarks: user.bookmarks,
 				token: generateToken(user._id),
 			})
 		} else {

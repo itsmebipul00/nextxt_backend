@@ -8,8 +8,11 @@ const postSchema = mongoose.Schema(
 			ref: 'User',
 		},
 		content: {
-			image: { type: String },
-			text: { type: String },
+			image: {
+				data: String,
+				contentType: String,
+			},
+			text: String,
 		},
 		likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 		subContent: [
@@ -20,5 +23,9 @@ const postSchema = mongoose.Schema(
 )
 
 const Post = mongoose.model('Post', postSchema)
+
+// const a = Post.findOne({})
+
+// console.log(a)
 
 export default Post
