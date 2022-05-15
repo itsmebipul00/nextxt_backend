@@ -24,10 +24,23 @@ const createNewPosts = asyncHandler(async (req, res) => {
 const getAllPosts = asyncHandler(async (req, res) => {
 	const allPosts = await Post.find({}).populate(
 		'user',
-		'username profilePic'
+		'username profilePic _id'
 	)
-
 	res.status(200).json(allPosts)
 })
 
-export { createNewPosts, getAllPosts }
+const getUsersPost = asyncHandler(async (req, res) => {
+	const usersPost = await Post.find(
+		{ user: req.params.userId },
+		{ content: 1 }
+	).populate('user', 'username profilePic')
+
+	// console.log(userPost)
+	if (usersPost) {
+		res.status(200).json(usersPost)
+	} else {
+		throw new Error('No Posts from the user')
+	}
+})
+
+export { createNewPosts, getAllPosts, getUsersPost }

@@ -8,10 +8,8 @@ import User from '../models/userModel.js'
 const authUser = asyncHandler(async (req, res) => {
 	const { username, email, password } = req.body
 	const user = await User.findOne({ email })
-
 	if (!!user) {
 		const isPasswordMatched = await user.matchPasswords(password)
-
 		if (!!user && isPasswordMatched) {
 			res.json({
 				_id: user._id,
@@ -44,9 +42,13 @@ const authUser = asyncHandler(async (req, res) => {
 				username: user.username,
 				email: user.email,
 				posts: user.posts,
+				drafts: user.drafts,
+				archived: user.archived,
 				following: user.following,
 				followers: user.followers,
 				bookmarks: user.bookmarks,
+				bio: user.bio,
+				dp: user.profilePic,
 				token: generateToken(user._id),
 			})
 		} else {

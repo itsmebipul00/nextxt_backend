@@ -9,6 +9,7 @@ import ExpressFormidable from 'express-formidable'
 import {
 	createNewPosts,
 	getAllPosts,
+	getUsersPost,
 } from '../controllers/postsController.js'
 
 router
@@ -16,5 +17,7 @@ router
 	.post(protect, ExpressFormidable(), createNewPosts)
 
 router.route('/').get(protect, getAllPosts)
+
+router.route('/user/:userId').get(protect, getUsersPost)
 
 export default router

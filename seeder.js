@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import users from './data/users.js'
 import User from './models/userModel.js'
 import connectDB from './config/db.js'
+import Post from './models/postModel.js'
 
 dotenv.config()
 
@@ -25,7 +26,7 @@ const importData = async () => {
 
 const destroyData = async () => {
 	try {
-		await User.deleteMany()
+		await Post.deleteMany()
 
 		process.exit()
 	} catch (error) {
