@@ -33,7 +33,7 @@ const getUsersPost = asyncHandler(async (req, res) => {
 	const usersPost = await Post.find(
 		{ user: req.params.userId },
 		{ content: 1 }
-	).populate('user', 'username profilePic')
+	).populate('user', 'username profilePic bio following follower')
 
 	// console.log(userPost)
 	if (usersPost) {

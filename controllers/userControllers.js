@@ -47,4 +47,37 @@ const updateUser = asyncHandler(async (req, res) => {
 	}
 })
 
-export { getAllUsers, getUserById, updateUser }
+const updatefollows = asyncHandler(async (req, res) => {
+	const sender = req.params.id
+	const reciever = req.body.id
+
+	const user = await User.findById(sender)
+
+	const isFollowing = user.following.find(
+		id => id.valueOf() === reciever
+	)
+
+	// console.log(isFollowing)
+
+	if (!isFollowing) {
+		const userToFollow = await User.updateOne(
+			{ _id: sender },
+			{ $push: { following: reciever } }
+		)
+		console.log(userToFollow)
+	} else {
+		console.log('first')
+		const userToUnfollow = await User.updateOne(
+			{ _id: sender },
+			{ $pull: { following: reciever } }
+		)
+		console.log(userToUnfollow)
+	}
+	// console.log(user)
+	// console.log(isFollowing)
+
+	// console.log('sender', sender)
+	// console.log('reci', reciever)
+})
+
+export { getAllUsers, getUserById, updateUser, updatefollows }
