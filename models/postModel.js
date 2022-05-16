@@ -24,8 +24,4 @@ const postSchema = mongoose.Schema(
 
 const Post = mongoose.model('Post', postSchema)
 
-// const a = Post.findOne({})
-
-// console.log(a)
-
 export default Post
