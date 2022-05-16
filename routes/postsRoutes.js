@@ -4,12 +4,13 @@ import { protect } from '../middleware/protect.js'
 
 const router = express.Router()
 
-// console.log()
 import ExpressFormidable from 'express-formidable'
 import {
 	createNewPosts,
 	getAllPosts,
+	getUserFeed,
 	getUsersPost,
+	updateLikes,
 } from '../controllers/postsController.js'
 
 router
@@ -19,5 +20,9 @@ router
 router.route('/').get(protect, getAllPosts)
 
 router.route('/user/:userId').get(protect, getUsersPost)
+
+router.route('/userFeed/:userId').get(protect, getUserFeed)
+
+router.route('/toggleLikes/:postId/:userId').put(protect, updateLikes)
 
 export default router

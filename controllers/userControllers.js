@@ -49,35 +49,40 @@ const updateUser = asyncHandler(async (req, res) => {
 
 const updatefollows = asyncHandler(async (req, res) => {
 	const sender = req.params.id
-	const reciever = req.body.id
+	const receiver = req.body.id
 
-	const user = await User.findById(sender)
+	const user = await User.findById(req.params.id)
 
-	const isFollowing = user.following.find(
-		id => id.valueOf() === reciever
-	)
-
-	// console.log(isFollowing)
-
-	if (!isFollowing) {
-		const userToFollow = await User.updateOne(
-			{ _id: sender },
-			{ $push: { following: reciever } }
+	if (user) {
+		const isFollowing = user.following.find(
+			id => id.valueOf() === receiver
 		)
-		console.log(userToFollow)
+		if (!isFollowing) {
+			await User.updateOne(
+				{ _id: sender },
+				{ $push: { following: receiver } }
+			)
+			await User.updateOne(
+				{ _id: receiver },
+				{ $push: { follower: sender } }
+			)
+			res.status(201).json('Following updated')
+		} else {
+			await User.updateOne(
+				{ _id: sender },
+				{ $pull: { following: receiver } }
+			)
+
+			await User.updateOne(
+				{ _id: receiver },
+				{ $pull: { follower: sender } }
+			)
+
+			res.status(201).json('Following updated')
+		}
 	} else {
-		console.log('first')
-		const userToUnfollow = await User.updateOne(
-			{ _id: sender },
-			{ $pull: { following: reciever } }
-		)
-		console.log(userToUnfollow)
+		throw new Error('user not found')
 	}
-	// console.log(user)
-	// console.log(isFollowing)
-
-	// console.log('sender', sender)
-	// console.log('reci', reciever)
 })
 
 export { getAllUsers, getUserById, updateUser, updatefollows }
