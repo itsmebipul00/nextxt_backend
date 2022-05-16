@@ -58,28 +58,22 @@ const getUserFeed = asyncHandler(async (req, res) => {
 	}
 })
 
-const updateLikes = asyncHandler(async (req, res) => {
-	const post = await Post.findById(req.params.postId)
-	if (post) {
-		const isLiked = post.likes.find(
-			id => id.valueOf() === req.params.userId
-		)
-		if (!isLiked) {
-			await Post.updateOne(
-				{ _id: req.params.postId },
-				{ $push: { likes: req.params.userId } }
-			)
-			res.status(201).send('Post liked')
-		} else {
-			await Post.updateOne(
-				{ _id: req.params.postId },
-				{ $pull: { likes: req.params.userId } }
-			)
-			res.status(201).send(false)
-		}
-	} else {
-		throw new Error('No posts found')
-	}
+const likePost = asyncHandler(async (req, res) => {
+	await Post.updateOne(
+		{ _id: req.params.postId },
+		{ $push: { likes: req.params.userId } }
+	)
+	// console.log(a)
+	res.status(201).send('Post Liked')
+})
+
+const unlikePost = asyncHandler(async (req, res) => {
+	await Post.updateOne(
+		{ _id: req.params.postId },
+		{ $pull: { likes: req.params.userId } }
+	)
+	// console.log(b)
+	res.status(201).send('Post unliked')
 })
 
 export {
@@ -87,5 +81,6 @@ export {
 	getAllPosts,
 	getUsersPost,
 	getUserFeed,
-	updateLikes,
+	likePost,
+	unlikePost,
 }

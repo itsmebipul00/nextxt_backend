@@ -66,7 +66,7 @@ const updatefollows = asyncHandler(async (req, res) => {
 				{ _id: receiver },
 				{ $push: { follower: sender } }
 			)
-			res.status(201).json('Following updated')
+			res.status(201).send('Following updated')
 		} else {
 			await User.updateOne(
 				{ _id: sender },
@@ -78,7 +78,7 @@ const updatefollows = asyncHandler(async (req, res) => {
 				{ $pull: { follower: sender } }
 			)
 
-			res.status(201).json('Following updated')
+			res.status(201).send('Following updated')
 		}
 	} else {
 		throw new Error('user not found')

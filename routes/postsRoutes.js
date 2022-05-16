@@ -10,7 +10,8 @@ import {
 	getAllPosts,
 	getUserFeed,
 	getUsersPost,
-	updateLikes,
+	likePost,
+	unlikePost,
 } from '../controllers/postsController.js'
 
 router
@@ -23,6 +24,8 @@ router.route('/user/:userId').get(protect, getUsersPost)
 
 router.route('/userFeed/:userId').get(protect, getUserFeed)
 
-router.route('/toggleLikes/:postId/:userId').put(protect, updateLikes)
+router.route('/like/:postId/:userId').put(protect, likePost)
+
+router.route('/unlike/:postId/:userId').put(protect, unlikePost)
 
 export default router

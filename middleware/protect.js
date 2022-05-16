@@ -4,7 +4,6 @@ import User from '../models/userModel.js'
 
 export const protect = asyncHandler(async (req, res, next) => {
 	let token
-	console.log(req.body)
 	if (req.headers.authorization?.startsWith('Bearer')) {
 		try {
 			token = req.headers.authorization.split(' ')[1]
