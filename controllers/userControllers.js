@@ -13,7 +13,9 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/:userId
 // @access  Private
 const getUserById = asyncHandler(async (req, res) => {
-	const user = await User.findById(req.params.id).select('-password')
+	const user = await User.findById(req.params.userId)
+		.select('-password')
+		.populate('posts', 'content')
 
 	if (user) {
 		res.json(user)
@@ -45,4 +47,42 @@ const updateUser = asyncHandler(async (req, res) => {
 	}
 })
 
-export { getAllUsers, getUserById, updateUser }
+const updatefollows = asyncHandler(async (req, res) => {
+	const sender = req.params.id
+	const receiver = req.body.id
+
+	const user = await User.findById(req.params.id)
+
+	if (user) {
+		const isFollowing = user.following.find(
+			id => id.valueOf() === receiver
+		)
+		if (!isFollowing) {
+			await User.updateOne(
+				{ _id: sender },
+				{ $push: { following: receiver } }
+			)
+			await User.updateOne(
+				{ _id: receiver },
+				{ $push: { follower: sender } }
+			)
+			res.status(201).json('Following updated')
+		} else {
+			await User.updateOne(
+				{ _id: sender },
+				{ $pull: { following: receiver } }
+			)
+
+			await User.updateOne(
+				{ _id: receiver },
+				{ $pull: { follower: sender } }
+			)
+
+			res.status(201).json('Following updated')
+		}
+	} else {
+		throw new Error('user not found')
+	}
+})
+
+export { getAllUsers, getUserById, updateUser, updatefollows }
