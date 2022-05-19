@@ -13,10 +13,11 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/:userId
 // @access  Private
 const getUserById = asyncHandler(async (req, res) => {
+	// console.log(req.params.userId)
 	const user = await User.findById(req.params.userId)
 		.select('-password')
 		.populate('posts', 'content')
-
+	// console.log(user)
 	if (user) {
 		res.json(user)
 	} else {

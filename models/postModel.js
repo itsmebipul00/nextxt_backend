@@ -15,8 +15,11 @@ const postSchema = mongoose.Schema(
 			text: String,
 		},
 		likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-		subContent: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+		comments: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
+		],
+		bookmarks: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 		],
 	},
 	{ timestamps: true }
