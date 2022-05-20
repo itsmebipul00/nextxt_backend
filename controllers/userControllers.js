@@ -86,4 +86,19 @@ const updatefollows = asyncHandler(async (req, res) => {
 	}
 })
 
-export { getAllUsers, getUserById, updateUser, updatefollows }
+const editUserInfo = asyncHandler(async (req, res) => {
+	await User.updateOne(
+		{ _id: req.params.userId },
+		{ $set: { username: req.fields.username, bio: req.fields.bio } }
+	)
+
+	res.status(201).send('User edited')
+})
+
+export {
+	getAllUsers,
+	getUserById,
+	editUserInfo,
+	updatefollows,
+	updateUser,
+}
