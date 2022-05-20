@@ -13,10 +13,11 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/:userId
 // @access  Private
 const getUserById = asyncHandler(async (req, res) => {
+	// console.log(req.params.userId)
 	const user = await User.findById(req.params.userId)
 		.select('-password')
 		.populate('posts', 'content')
-
+	// console.log(user)
 	if (user) {
 		res.json(user)
 	} else {
@@ -85,4 +86,19 @@ const updatefollows = asyncHandler(async (req, res) => {
 	}
 })
 
-export { getAllUsers, getUserById, updateUser, updatefollows }
+const editUserInfo = asyncHandler(async (req, res) => {
+	await User.updateOne(
+		{ _id: req.params.userId },
+		{ $set: { username: req.fields.username, bio: req.fields.bio } }
+	)
+
+	res.status(201).send('User edited')
+})
+
+export {
+	getAllUsers,
+	getUserById,
+	editUserInfo,
+	updatefollows,
+	updateUser,
+}
