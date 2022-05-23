@@ -19,6 +19,7 @@ const userSchema = mongoose.Schema(
 		bio: String,
 		userLink: String,
 		profilePic: String,
+		bgImage: String,
 		drafts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
 		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
 		archived: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
@@ -41,8 +42,6 @@ userSchema.methods.matchPasswords = async function (passwordEntered) {
 }
 
 userSchema.pre('save', async function (next) {
-	console.log(this)
-
 	if (!this.isModified('password')) {
 		next()
 	}

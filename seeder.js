@@ -14,10 +14,6 @@ const importData = async () => {
 
 		const usersImported = await User.insertMany(users)
 
-		console.log(usersImported)
-
-		console.log('Data Imported!')
-
 		process.exit()
 	} catch (error) {
 		process.exit(1)
@@ -26,7 +22,7 @@ const importData = async () => {
 
 const destroyData = async () => {
 	try {
-		await Post.deleteMany()
+		await Comment.deleteMany()
 
 		process.exit()
 	} catch (error) {

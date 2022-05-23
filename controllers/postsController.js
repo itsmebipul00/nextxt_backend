@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import Post from '../models/postModel.js'
 import User from '../models/userModel.js'
 import Comment from '../models/commentModel.js'
+import Draft from '../models/draftModel.js'
 
 // @desc    Post a new Post
 // @route   POST /api/posts/:userId
@@ -10,10 +11,7 @@ const createNewPosts = asyncHandler(async (req, res) => {
 	const post = new Post({
 		user: req.params.userId,
 		content: {
-			// image: {
-			// 	data: fs.readFileSync(req.files.postImgs.path),
-			// 	contentType: req.files.postImgs.types,
-			// },
+			image: req.fields.postImgs,
 			text: req.fields.postText,
 		},
 	})
@@ -24,23 +22,17 @@ const createNewPosts = asyncHandler(async (req, res) => {
 })
 
 const getAllPosts = asyncHandler(async (req, res) => {
-	const allPosts = await Post.find({}).populate(
-		'user',
-		'username profilePic _id'
-	)
+	const allPosts = await Post.find({
+		archived: false,
+		drafted: false,
+	}).populate('user', 'username profilePic _id')
 	res.status(200).json(allPosts)
 })
 
 const getUsersPost = asyncHandler(async (req, res) => {
-	const book = await User.findById(req.params.userId).select(
-		'bookmarks'
-	)
-
 	const usersPost = await Post.find({
-		$or: [
-			{ _id: { $in: book.bookmarks } },
-			{ user: req.params.userId },
-		],
+		user: req.params.userId,
+		drafted: false,
 	}).populate('user', 'username profilePic bio following follower')
 
 	if (usersPost) {
@@ -57,6 +49,8 @@ const getUserFeed = asyncHandler(async (req, res) => {
 
 	const feed = await Post.find({
 		user: { $in: person.following },
+		archived: false,
+		drafted: false,
 	}).populate('user')
 
 	if (feed) {
@@ -132,7 +126,6 @@ const getPostReplies = asyncHandler(async (req, res) => {
 })
 
 const deletePost = asyncHandler(async (req, res) => {
-	// console.log(req.params)
 	await Post.findByIdAndDelete(req.params.postId)
 
 	await Comment.deleteMany({ post: req.params.postId })
@@ -143,43 +136,96 @@ const deletePost = asyncHandler(async (req, res) => {
 const updatePost = asyncHandler(async (req, res) => {
 	await Post.updateOne(
 		{ _id: req.params.postId },
-		{ $set: { 'content.text': req.fields.postText } }
+		{
+			$set: {
+				'content.text': req.fields.postText,
+				'content.image': req.fields.file,
+			},
+		}
 	)
-	// console.log(req.fields, req.params)
+
+	res.status(200).send('Post Updated')
 })
 
 const bookmarkPost = asyncHandler(async (req, res) => {
-	const a = await Post.updateOne(
+	await Post.updateOne(
 		{ _id: req.params.postId },
 		{ $push: { bookmarks: req.params.userId } }
 	)
 
-	const b = await User.updateOne(
+	await User.updateOne(
 		{ _id: req.params.userId },
 		{ $push: { bookmarks: req.params.postId } }
 	)
 	res.status(201).send('BookMarked Post')
-
-	console.log(a, b, 'A')
 })
 
 const removeBookMark = asyncHandler(async (req, res) => {
-	const a = await Post.updateOne(
+	await Post.updateOne(
 		{ _id: req.params.postId },
 		{ $pull: { bookmarks: req.params.userId } }
 	)
 
-	const b = await User.updateOne(
+	await User.updateOne(
 		{ _id: req.params.userId },
 		{ $pull: { bookmarks: req.params.postId } }
 	)
 	res.status(201).send('Removed BookMarked Post')
+})
 
-	console.log(a, b, 'B')
+const archivePost = asyncHandler(async (req, res) => {
+	const post = await Post.updateOne(
+		{ _id: req.params.postId },
+		{
+			$set: {
+				archived: true,
+			},
+		}
+	)
+
+	if (post) {
+		res.status(200).send('Post archived')
+	}
+})
+
+const removeFromArchive = asyncHandler(async (req, res) => {
+	const post = await Post.updateOne(
+		{ _id: req.params.postId },
+		{
+			$set: {
+				archived: false,
+			},
+		}
+	)
+
+	if (post) {
+		res.status(200).send('Removed from archived')
+	}
+})
+
+const createPostFromDrafts = asyncHandler(async (req, res) => {
+	const post = new Post({
+		user: req.params.userId,
+		content: {
+			image: req.fields.postImgs,
+			text: req.fields.postText,
+		},
+	})
+
+	await post.save()
+
+	await Draft.findByIdAndDelete(req.params.draftId)
+
+	if (post) {
+		res.status(200).send('Post created')
+	} else {
+		throw new Error('Invalid ID')
+	}
 })
 
 export {
 	createNewPosts,
+	removeFromArchive,
 	getAllPosts,
 	getUsersPost,
 	getUserFeed,
@@ -192,4 +238,6 @@ export {
 	updatePost,
 	bookmarkPost,
 	removeBookMark,
+	archivePost,
+	createPostFromDrafts,
 }
