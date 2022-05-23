@@ -1,5 +1,8 @@
 import asyncHandler from 'express-async-handler'
 import User from '../models/userModel.js'
+import Post from '../models/postModel.js'
+import Draft from '../models/draftModel.js'
+import e from 'express'
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -13,11 +16,9 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/:userId
 // @access  Private
 const getUserById = asyncHandler(async (req, res) => {
-	// console.log(req.params.userId)
 	const user = await User.findById(req.params.userId)
 		.select('-password')
 		.populate('posts', 'content')
-	// console.log(user)
 	if (user) {
 		res.json(user)
 	} else {
@@ -87,12 +88,64 @@ const updatefollows = asyncHandler(async (req, res) => {
 })
 
 const editUserInfo = asyncHandler(async (req, res) => {
+	const { username, bio, profilePic, bgImage } = req.fields
 	await User.updateOne(
 		{ _id: req.params.userId },
-		{ $set: { username: req.fields.username, bio: req.fields.bio } }
+		{ $set: { username, bio, profilePic, bgImage } }
 	)
 
 	res.status(201).send('User edited')
+})
+
+const getUsersBookmarks = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.userId)
+
+	const bookmarks = await Post.find({
+		_id: { $in: user.bookmarks },
+	}).populate('user', 'username profilePic')
+
+	if (bookmarks) {
+		res.json(bookmarks)
+	} else {
+		throw new Error('No bookmarks found')
+	}
+})
+
+const createDraft = asyncHandler(async (req, res) => {
+	const draft = new Draft({
+		user: req.params.userId,
+		content: {
+			image: req.fields.postImgs,
+			text: req.fields.postText,
+		},
+	})
+
+	await draft.save()
+
+	res.status(201).send('Saved to drafts')
+})
+
+const getUserDrafts = asyncHandler(async (req, res) => {
+	const drafts = await Draft.find({
+		user: req.params.userId,
+	}).populate('user', 'username profilePic')
+
+	if (drafts) {
+		res.status(200).json(drafts)
+	} else {
+		throw new Error('No drafts found')
+	}
+})
+
+const deleteDraft = asyncHandler(async (req, res) => {
+	const deletedDraft = await Draft.findByIdAndDelete(
+		req.params.draftId
+	)
+	if (deletedDraft) {
+		res.status(200).send('Draft deleted')
+	} else {
+		throw new Error('No drafts found')
+	}
 })
 
 export {
@@ -101,4 +154,8 @@ export {
 	editUserInfo,
 	updatefollows,
 	updateUser,
+	getUsersBookmarks,
+	createDraft,
+	getUserDrafts,
+	deleteDraft,
 }

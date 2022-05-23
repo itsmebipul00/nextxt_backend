@@ -8,10 +8,7 @@ const postSchema = mongoose.Schema(
 			ref: 'User',
 		},
 		content: {
-			image: {
-				data: String,
-				contentType: String,
-			},
+			image: String,
 			text: String,
 		},
 		likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -21,9 +18,17 @@ const postSchema = mongoose.Schema(
 		bookmarks: [
 			{ type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 		],
+		archived: Boolean,
+		drafted: Boolean,
 	},
 	{ timestamps: true }
 )
+
+postSchema.pre('save', function (next) {
+	this.archived = false
+	this.drafted = false
+	next()
+})
 
 const Post = mongoose.model('Post', postSchema)
 

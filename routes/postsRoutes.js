@@ -19,6 +19,9 @@ import {
 	updatePost,
 	bookmarkPost,
 	removeBookMark,
+	archivePost,
+	removeFromArchive,
+	createPostFromDrafts,
 } from '../controllers/postsController.js'
 
 router
@@ -50,5 +53,13 @@ router.route('/bookmark/:postId/:userId').put(protect, bookmarkPost)
 router
 	.route('/removeBookmark/:postId/:userId')
 	.put(protect, removeBookMark)
+
+router.route('/archive/:postId').post(protect, archivePost)
+
+router.route('/archive/:postId').delete(protect, removeFromArchive)
+
+router
+	.route('/drafts/:draftId/:userId')
+	.post(protect, ExpressFormidable(), createPostFromDrafts)
 
 export default router
