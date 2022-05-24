@@ -22,11 +22,22 @@ const createNewPosts = asyncHandler(async (req, res) => {
 })
 
 const getAllPosts = asyncHandler(async (req, res) => {
+	const pageSize = 4
+	const page = Number(req.query.pgNumber) || 1
+
+	const count = await Post.countDocuments({})
+
+	const pages = Math.ceil(count / pageSize)
+
 	const allPosts = await Post.find({
 		archived: false,
 		drafted: false,
 	}).populate('user', 'username profilePic _id')
-	res.status(200).json(allPosts)
+	// 	.limit(pageSize)
+	// 	.skip(pageSize * page - 1)
+	// console.log(allPosts)
+
+	res.status(200).json([...allPosts, pages, page])
 })
 
 const getUsersPost = asyncHandler(async (req, res) => {
@@ -115,7 +126,7 @@ const getPostReplies = asyncHandler(async (req, res) => {
 		{
 			post: req.params.postId,
 		},
-		{ post: 0, createdAt: 0 }
+		{ post: 0 }
 	).populate('user', 'username profilePic')
 
 	if (comments) {
