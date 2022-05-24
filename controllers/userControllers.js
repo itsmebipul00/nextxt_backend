@@ -2,7 +2,6 @@ import asyncHandler from 'express-async-handler'
 import User from '../models/userModel.js'
 import Post from '../models/postModel.js'
 import Draft from '../models/draftModel.js'
-import e from 'express'
 
 // @desc    Get all users
 // @route   GET /api/users
