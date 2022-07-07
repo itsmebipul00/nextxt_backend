@@ -7,7 +7,7 @@ import Draft from '../models/draftModel.js'
 // @route   GET /api/users
 // @access  Private
 const getAllUsers = asyncHandler(async (req, res) => {
-	const users = await User.find({})
+	const users = await User.find({}).select('username')
 	res.json(users)
 })
 

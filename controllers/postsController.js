@@ -22,22 +22,12 @@ const createNewPosts = asyncHandler(async (req, res) => {
 })
 
 const getAllPosts = asyncHandler(async (req, res) => {
-	const pageSize = 4
-	const page = Number(req.query.pgNumber) || 1
-
-	const count = await Post.countDocuments({})
-
-	const pages = Math.ceil(count / pageSize)
-
 	const allPosts = await Post.find({
 		archived: false,
 		drafted: false,
 	}).populate('user', 'username profilePic _id')
-	// 	.limit(pageSize)
-	// 	.skip(pageSize * page - 1)
-	// console.log(allPosts)
 
-	res.status(200).json([...allPosts, pages, page])
+	res.status(200).json(allPosts)
 })
 
 const getUsersPost = asyncHandler(async (req, res) => {
